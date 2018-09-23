@@ -1,0 +1,23 @@
+<html>
+<head>
+    <meta name="google-signin-scope" content="https://www.googleapis.com/auth/spreadsheets">
+    <meta name="google-signin-client_id" content="508066267019-p0483ruit7f6qf10ck0as81858sgup0v.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <script>
+        function onSignIn(user) {
+        var profile = user.getBasicProfile();
+        $('#profile .name').text(profile.getName());
+        $('#profile .email').text(profile.getEmail());
+        }
+    </script>
+</head>
+<body>
+    <div id="profile" style="margin: 0 20px;">
+        <b class="name"></b><br/>
+        <i class="email"></i>
+    </div>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    
+</body>
+</html>
