@@ -28,7 +28,7 @@
 
       selection.removeAllRanges()
 
-      window.open("foreflight://" + elem.innerHTML);
+      // window.open("foreflight://" + elem.innerHTML);
     }
 
     function setPadState(name, str)
@@ -89,10 +89,10 @@
         $("#lati_text").html("");
         $("#long_text").html("");
       }
-      else 
+      else
       {
         $("#foreflight_text").html(lat + "/" + long);
-        $("#maps_text").html("<a target=\"_blank\" href=\"https://maps.google.com/?ll=" + lat + "," + long + ">Google Maps</a>");
+        $("#maps_text").html("<a target=\"_blank\" href=\"https://www.google.com/maps/@?api=1&map_action=map&basemap=satellite&zoom=18&center=" + lat + "," + long + "\">Google Maps</a>");
         $("#earth_text").html("<a target=\"_blank\" href=\"https://earth.google.com/web/@" + lat + "," + long + ",1000d,60t\">Google Earth</a>");
         $("#lati_text").html(lat);
         $("#long_text").html(long);
@@ -201,12 +201,11 @@
     <ul data-role="listview" data-filter="true" id="lzid-list">
     </ul>
   </div>
-  
-  
-  
+
+
   <br/><br/>
-  
-  
+
+
   <table>
   <tr>
     <td align="right">Hosptial:</td>
