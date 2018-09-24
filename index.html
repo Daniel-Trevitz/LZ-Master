@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
-  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+<!--   <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/> -->
 
   <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<!--   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> -->
+<!--   <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script> -->
 
   <!-- undo bootstrap setting to cleanup jquery mobile -->
   <style>
@@ -93,7 +93,7 @@
       }
       else
       {
-        $("#foreflight_text").html(lat + "/" + long);
+        $("#foreflight_text").html("<a target=\"_blank\" href=\"foreflightmobile://maps/search?q=" + lat + "/" + long + "\">Fore Flight</a>");
         $("#maps_text").html("<a target=\"_blank\" href=\"https://www.google.com/maps/@?api=1&map_action=map&basemap=satellite&zoom=18&center=" + lat + "," + long + "\">Google Maps</a>");
         $("#earth_text").html("<a target=\"_blank\" href=\"https://earth.google.com/web/@" + lat + "," + long + ",1000d,60t\">Google Earth</a>");
         $("#lati_text").html(lat);
@@ -174,6 +174,7 @@
       }
     }
 
+    /*
     function clearCopyTooltips()
     {
       var btns = document.querySelectorAll('.copy-btn');
@@ -193,6 +194,7 @@
 
       setTimeout(clearCopyTooltips, 2000);
     }
+    */
 
     window.onload = function()
     {
@@ -206,6 +208,7 @@
       $("#roof_pad").on("slidestop", showLast);
       $("#off_pad" ).on("slidestop", showLast);
 
+      /*
       // Setup the clipboard buttons using class .copy-btn
       var clipboard = new ClipboardJS('.copy-btn');
 
@@ -226,6 +229,7 @@
          btns[i].addEventListener('mouseleave', clearCopyTooltips);
          btns[i].addEventListener('blur',       clearCopyTooltips);
       }
+      */
     }
   </script>
 
@@ -301,9 +305,10 @@
       </select>
     </td>
   </tr>
+  <!--
   <tr style="vertical-align:top;">
-    <td align="right">Fore Flight:</td>
-    <td>
+    <td align="right"></td>
+    <td id="foreflight_text">
       <div class="pull-right">
         <button type="button" class="copy-btn" data-placement="bottom" data-clipboard-target="#foreflight_text"  style="padding: unset; margin: unset; width: 40px; height: 40px;">
           <img src="clippy.svg" alt="Copy to clipboard" width="20">
@@ -311,6 +316,10 @@
       </div>
       <span id="foreflight_text" style="margin-right:10px;"></span>
     </td>
+  </tr> -->
+  <tr>
+    <td></td>
+    <td id="foreflight_text"></td>
   </tr>
   <tr>
     <td></td>
@@ -333,6 +342,6 @@
     <td id="gps_text"></td>
   </tr>
   </table>
-  <footer><font size="2"><p style="text-align:right">Version 18_10_24_19_30</p></font></footer>
+  <footer><font size="2"><p style="text-align:right">Version 18_10_24_19_45</p></font></footer>
 </body>
 </html>
