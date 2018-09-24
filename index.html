@@ -1,23 +1,270 @@
 <html>
 <head>
-    <meta name="google-signin-scope" content="https://www.googleapis.com/auth/spreadsheets">
-    <meta name="google-signin-client_id" content="508066267019-p0483ruit7f6qf10ck0as81858sgup0v.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
 
-    <script>
-        function onSignIn(user) {
-        var profile = user.getBasicProfile();
-        $('#profile .name').text(profile.getName());
-        $('#profile .email').text(profile.getEmail());
-        }
-    </script>
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+  <script>
+
+    var hosp_list = new Array();
+    var lzid_list = new Array();
+    var ssdata;
+    var lastindex;
+    
+    function setPadState(name, str)
+    {
+      var st = true;
+      if( str == "" )
+        st = false;
+      else if( str == "no" )
+        st = false;
+
+      if( st )
+        $( name  ).val( "yes" );
+      else
+        $( name  ).val( "no" );
+
+      $( name  ).slider( "refresh" );
+    }
+
+    function showindex(index)
+    {
+      lastindex = index;
+      var dat = ssdata[index];
+
+      var hosp    = dat[1]; // Hosptial Name
+      var lzid    = dat[2]; // ID
+      var fltime  = dat[3]; // Flight Time
+      var gndpad  = dat[4].toUpperCase(); // Ground Pad
+      var roofpad = dat[5].toUpperCase(); // Roof Pad
+      var offpad  = dat[6].toUpperCase(); // Offsite Pad
+      var ctrlNum = dat[7]; // Control Phone Number
+      var mainNum = dat[8]; // Main Phone Number
+      var notes   = dat[9]; // Notes
+      var gps     = dat[10].toUpperCase(); //  GPS min-sec
+      var lat     = dat[11]; //Latitude
+      var long    = dat[12]; //Longitude
+
+      $("#hosp_text").html(hosp);
+      $("#lzid_text").html(lzid);
+      $("#flighttime_text").html(fltime);
+      $("#notes_text").html(notes);
+      $("#gps_text").html(gps);
+
+      $("#ctrlnum_text").html("<a target=\"_blank\" href=tel:" + ctrlNum + ">" + ctrlNum + "</a>");
+      $("#mainnum_text").html("<a target=\"_blank\" href=tel:" + mainNum + ">" + mainNum + "</a>");
+
+      setPadState("#gnd_pad" , gndpad);
+      setPadState("#roof_pad", roofpad);
+      setPadState("#off_pad" , offpad);
+      
+      if(lat == "" || long == "" )
+      {
+        $("#foreflight_text").html("");
+        $("#maps_text").html("");
+        $("#earth_text").html("");
+        $("#lati_text").html("");
+        $("#long_text").html("");
+      }
+      else 
+      {
+        $("#foreflight_text").html(lat + "/" + long);
+        $("#maps_text").html("<a target=\"_blank\" href=\"https://maps.google.com/?ll=" + lat + "," + long + ">Google Maps</a>");
+        $("#earth_text").html("<a target=\"_blank\" href=\"https://earth.google.com/web/@" + lat + "," + long + ",1000d,60t\">Google Earth</a>");
+        $("#lati_text").html(lat);
+        $("#long_text").html(long);
+      }
+    }
+
+    function showLast()
+    {
+      showindex(lastindex);
+      return false;
+    }
+
+    function startshow(id)
+    {
+      $( "#hosp-list-div" ).collapsible( "collapse" );
+      $( "#lzid-list-div" ).collapsible( "collapse" );
+
+      return parseInt(id.split("_")[1]);
+    }
+
+    function showlzid(html_id)
+    {
+      var index = startshow(html_id);
+      index = hosp_list[index][1];
+      showindex(index);
+    }
+
+    function showhosp(html_id)
+    {
+      var index = startshow(html_id);
+      index = lzid_list[index][1]; // json index
+      showindex(index);
+    }
+
+    function process(data)
+    {
+      ssdata = data.values;
+
+      // Process the JSON data - 
+      var len=data.values.length-1
+      for(var i = 1; i < len+1; i++)
+      {
+        hosp_list[i] = ([ data.values[i][1], i ]);
+        lzid_list[i] = ([ data.values[i][2], i ]);
+      }
+
+      var srtfun = function(a, b)
+      {
+        if (a[0] < b[0]) //sort string ascending
+          return -1 
+        if (a[0] > b[0])
+          return 1
+        return 0 //default return value (no sorting)
+      }
+
+      hosp_list.sort(srtfun);
+      lzid_list.sort(srtfun);
+
+      var hosp_lidata = "";
+      var lzid_lidata = "";
+      for(var i = 0; i < len; i++)
+      {
+         hosp_lidata += "<li><a class=\"ui-btn ui-btn-icon-right ui-icon-carat-r\" id=hosp_" + i + ">" + hosp_list[i][0] + "</a></li>";
+         lzid_lidata += "<li><a class=\"ui-btn ui-btn-icon-right ui-icon-carat-r\" id=lzid_" + i + ">" + lzid_list[i][0] + "</a></li>";
+      }
+
+      $("#hosp-list").html(hosp_lidata);
+      $("#lzid-list").html(lzid_lidata);
+
+      for(var i = 0; i < len; i++)
+      {
+        var a = document.getElementById("hosp_" + i);
+        var b = document.getElementById("lzid_" + i);
+
+        a.onclick = function(elem) { showlzid(elem.srcElement.id); return false;  }
+        b.onclick = function(elem) { showhosp(elem.srcElement.id); return false;  }
+      }
+    }
+
+
+    window.onload = function()
+    {
+      var url = "https://sheets.googleapis.com/v4/spreadsheets/14YF7CV3elNUwdlgC8bDa_aNATAV7cMBQ7AviaaDuR2c/values/Data?key=AIzaSyBL-Kj45bgzsfSFy0R-Kr0He-GlntUPluw";
+      $.getJSON(url, process);
+
+      $("#gnd_pad" ).on("slidestop", showLast);
+      $("#roof_pad").on("slidestop", showLast);
+      $("#off_pad" ).on("slidestop", showLast);
+    }
+  </script>
+
 </head>
 <body>
-    <div id="profile" style="margin: 0 20px;">
-        <b class="name"></b><br/>
-        <i class="email"></i>
-    </div>
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    
+
+  <div data-role="collapsible" data-theme="b" data-content-theme="b" id="hosp-list-div">
+    <h2>Choose a hospital</h2>
+    <ul data-role="listview" data-filter="true" id="hosp-list">
+    </ul>
+  </div>
+
+  <div data-role="collapsible" data-theme="b" data-content-theme="b" id="lzid-list-div">
+    <h2>Choose an ID</h2>
+    <ul data-role="listview" data-filter="true" id="lzid-list">
+    </ul>
+  </div>
+  
+  
+  
+  <br/><br/>
+  
+  
+  <table>
+  <tr>
+    <td align="right">Hosptial:</td>
+    <td id="hosp_text"></td>
+  </tr>
+  <tr>
+    <td align="right">ID:</td>
+    <td id="lzid_text"></td>
+  </tr>
+  <tr>
+    <td align="right">Flight Time:</td>
+    <td id="flighttime_text"></td>
+  </tr>
+  <tr>
+    <td align="right">Notes: </td>
+    <td id="notes_text"></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align="right">Control Phone #:</td>
+    <td id="ctrlnum_text"></td>
+  </tr>
+  <tr>
+    <td align="right">Main Phone #:</td>
+    <td id="mainnum_text"></td>
+  </tr>
+  <tr>
+    <td align="right">Ground pad:</td>
+    <td>
+      <select data-role="slider" data-mini="true" id="gnd_pad">
+        <option value="no">No</option>
+        <option value="yes" selected="">Yes</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td align="right">Roof pad:</td>
+    <td>
+      <select data-role="slider" data-mini="true" id="roof_pad">
+        <option value="no">No</option>
+        <option value="yes" selected="">Yes</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td align="right">Offsite pad:</td>
+    <td>
+      <select data-role="slider" data-mini="true" id="off_pad">
+        <option value="no">No</option>
+        <option value="yes" selected="">Yes</option>
+      </select>
+    </td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align="right">Fore Flight:</td>
+    <td id="foreflight_text"></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td id="maps_text"></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td id="earth_text"></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align="right">GPS:</td>
+    <td id="gps_text"></td>
+  </tr>
+  <tr>
+    <td align="right">Latitude:</td>
+    <td id="lati_text"></td>
+  </tr>
+  <tr>
+    <td align="right">Longitude:</td>
+    <td id="long_text"></td>
+  </tr>
+  
+  </table>
+
 </body>
 </html>
