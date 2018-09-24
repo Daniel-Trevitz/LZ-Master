@@ -7,32 +7,20 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
+  <script src="clipboard.min.js"></script>
+  
+  <style>
+  .copy-btn {
+    padding: 2px 6px;
+  }
+  </style>
+
   <script>
 
     var hosp_list = new Array();
     var lzid_list = new Array();
     var ssdata;
     var lastindex;
-
-    function copyForeFlight()
-    {
-        var lat  = ssdata[lastindex][11]; //Latitude
-        var long = ssdata[lastindex][12]; //Longitude
-        // Create new element
-        var el = document.createElement('textarea');
-        // Set value (string to be copied)
-        el.value = lat + "/" + long;
-        // Set non-editable to avoid focus and move outside of view
-        el.setAttribute('readonly', '');
-        el.style = {position: 'absolute', left: '-9999px'};
-        document.body.appendChild(el);
-        // Select text inside element
-        el.select();
-        // Copy text to clipboard
-        document.execCommand('copy');
-        // Remove temporary element
-        document.body.removeChild(el);
-    }
 
     function setPadState(name, str)
     {
@@ -185,8 +173,7 @@
       $("#roof_pad").on("slidestop", showLast);
       $("#off_pad" ).on("slidestop", showLast);
 
-      var ff = document.getElementById("foreFlightCopyBtn");
-      ff.onclick = copyForeFlight;
+      var clipboard = new ClipboardJS('.copy-btn');
     }
   </script>
 
@@ -267,7 +254,11 @@
   <tr>
     <td align="right">Fore Flight:</td>
     <td id="foreflight_text"></td>
-    <td><button id="foreFlightCopyBtn">Copy</button></td>
+    <td>
+      <button class="copy-btn" data-clipboard-target="#foreflight_text">
+        <img src="clippy.svg" alt="Copy to clipboard" width=15 >
+      </button>
+    </td>
   </tr>
   <tr>
     <td></td>
@@ -290,6 +281,6 @@
     <td id="gps_text"></td>
   </tr>
   </table>
-  <footer><font size="2"><p style="text-align:right">Version 18-10-24-08-32</p></font></footer>
+  <footer><font size="2"><p style="text-align:right">Version 18-10-24-08-36</p></font></footer>
 </body>
 </html>
