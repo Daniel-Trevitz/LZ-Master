@@ -13,7 +13,24 @@
     var lzid_list = new Array();
     var ssdata;
     var lastindex;
-    
+
+    function copyForeFlight()
+    {
+      var elem = document.getElementById("foreflight_text");
+      var range = document.createRange();
+      range.selectNode(elem);
+
+      var selection = window.getSelection() // get Selection object from currently user selected text
+      selection.removeAllRanges() // unselect any user selected text (if any)
+      selection.addRange(range);
+
+      document.execCommand("copy");
+
+      selection.removeAllRanges()
+
+      window.open("foreflight://" + elem.innerHTML);
+    }
+
     function setPadState(name, str)
     {
       var st = true;
@@ -41,8 +58,8 @@
       var gndpad  = dat[4].toUpperCase(); // Ground Pad
       var roofpad = dat[5].toUpperCase(); // Roof Pad
       var offpad  = dat[6].toUpperCase(); // Offsite Pad
-      var ctrlNum = dat[7]; // Control Phone Number
-      var mainNum = dat[8]; // Main Phone Number
+      var ctrlNum = dat[7].toString(); // Control Phone Number
+      var mainNum = dat[8].toString(); // Main Phone Number
       var notes   = dat[9]; // Notes
       var gps     = dat[10].toUpperCase(); //  GPS min-sec
       var lat     = dat[11]; //Latitude
@@ -54,14 +71,17 @@
       $("#notes_text").html(notes);
       $("#gps_text").html(gps);
 
-      $("#ctrlnum_text").html("<a target=\"_blank\" href=tel:" + ctrlNum + ">" + ctrlNum + "</a>");
-      $("#mainnum_text").html("<a target=\"_blank\" href=tel:" + mainNum + ">" + mainNum + "</a>");
+      var ctrlNum_l = ctrlNum.replace('(', '').replace(')', '').replace('-', '').replace('+', '').replace(' ', '');
+      var mainNum_l = mainNum.replace('(', '').replace(')', '').replace('-', '').replace('+', '').replace(' ', '');
+
+      $("#ctrlnum_text").html("<a target=\"_blank\" href=\"tel:" + ctrlNum_l + "\">" + ctrlNum + "</a>");
+      $("#mainnum_text").html("<a target=\"_blank\" href=\"tel:" + mainNum_l + "\">" + mainNum + "</a>");
 
       setPadState("#gnd_pad" , gndpad);
       setPadState("#roof_pad", roofpad);
       setPadState("#off_pad" , offpad);
-      
-      if(lat == "" || long == "" )
+
+      if(lat == null || long == null || lat == "" || long == "" )
       {
         $("#foreflight_text").html("");
         $("#maps_text").html("");
@@ -93,16 +113,16 @@
       return parseInt(id.split("_")[1]);
     }
 
-    function showlzid(html_id)
+    function showhosp(elem)
     {
-      var index = startshow(html_id);
+      var index = startshow(elem.srcElement.id);
       index = hosp_list[index][1];
       showindex(index);
     }
 
-    function showhosp(html_id)
+    function showlzid(elem)
     {
-      var index = startshow(html_id);
+      var index = startshow(elem.srcElement.id);
       index = lzid_list[index][1]; // json index
       showindex(index);
     }
@@ -147,8 +167,8 @@
         var a = document.getElementById("hosp_" + i);
         var b = document.getElementById("lzid_" + i);
 
-        a.onclick = function(elem) { showlzid(elem.srcElement.id); return false;  }
-        b.onclick = function(elem) { showhosp(elem.srcElement.id); return false;  }
+        a.onclick = showhosp;
+        b.onclick = showlzid;
       }
     }
 
@@ -161,6 +181,9 @@
       $("#gnd_pad" ).on("slidestop", showLast);
       $("#roof_pad").on("slidestop", showLast);
       $("#off_pad" ).on("slidestop", showLast);
+
+      var ff = document.getElementById("foreFlightCopyBtn");
+      ff.onclick = copyForeFlight;
     }
   </script>
 
@@ -237,10 +260,10 @@
       </select>
     </td>
   </tr>
-  <tr></tr>
   <tr>
     <td align="right">Fore Flight:</td>
     <td id="foreflight_text"></td>
+    <td><button id="foreFlightCopyBtn">Copy</button></td>
   </tr>
   <tr>
     <td></td>
@@ -250,11 +273,6 @@
     <td></td>
     <td id="earth_text"></td>
   </tr>
-  <tr></tr>
-  <tr>
-    <td align="right">GPS:</td>
-    <td id="gps_text"></td>
-  </tr>
   <tr>
     <td align="right">Latitude:</td>
     <td id="lati_text"></td>
@@ -263,7 +281,10 @@
     <td align="right">Longitude:</td>
     <td id="long_text"></td>
   </tr>
-  
+  <tr>
+    <td align="right">GPS:</td>
+    <td id="gps_text"></td>
+  </tr>
   </table>
 
 </body>
