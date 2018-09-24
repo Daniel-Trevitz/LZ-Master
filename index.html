@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -13,6 +12,18 @@
   <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+
+  <!-- undo bootstrap setting to cleanup jquery mobile -->
+  <style>
+    *, *:before, *:after {
+      -webkit-box-sizing: unset;
+    }
+    
+    table {
+      border-collapse: unset;
+      border-spacing: 2px;
+    }
+  </style>
 
   <script>
     var hosp_list = new Array();
@@ -146,8 +157,8 @@
       var lzid_lidata = "";
       for(var i = 0; i < len; i++)
       {
-         hosp_lidata += "<li><a class=\"ui-btn ui-btn-icon-right ui-icon-carat-r\" id=hosp_" + i + ">" + hosp_list[i][0] + "</a></li>";
-         lzid_lidata += "<li><a class=\"ui-btn ui-btn-icon-right ui-icon-carat-r\" id=lzid_" + i + ">" + lzid_list[i][0] + "</a></li>";
+         hosp_lidata += "<li><a class=\"ui-btn\" id=hosp_" + i + ">" + hosp_list[i][0] + "</a></li>";
+         lzid_lidata += "<li><a class=\"ui-btn\" id=lzid_" + i + ">" + lzid_list[i][0] + "</a></li>";
       }
 
       $("#hosp-list").html(hosp_lidata);
@@ -199,18 +210,18 @@
       var clipboard = new ClipboardJS('.copy-btn');
 
       clipboard.on('success', function(e) {
-        showTooltip(e.trigger,"Copied!");
+        showTooltip(e.trigger, "Copied!");
         e.clearSelection();
       });
 
       clipboard.on('error', function(e) {
-        showTooltip(e.trigger,"failed :(");
+        showTooltip(e.trigger, "failed :(");
       });
 
       // all class copy-btn will remove tool tip after loosing the cursor
       var btns = document.querySelectorAll('.copy-btn');
 
-      for(var i=0; i < btns.length; i++)
+      for(var i = 0; i < btns.length; i++)
       {
          btns[i].addEventListener('mouseleave', clearCopyTooltips);
          btns[i].addEventListener('blur',       clearCopyTooltips);
@@ -290,13 +301,15 @@
       </select>
     </td>
   </tr>
-  <tr>
+  <tr style="vertical-align:top;">
     <td align="right">Fore Flight:</td>
-    <td id="foreflight_text"></td>
     <td>
-      <button type="button" class="copy-btn btn ui-btn" data-placement="bottom" data-clipboard-target="#foreflight_text">
-        <img src="clippy.svg" alt="Copy to clipboard" width="15">
-      </button>
+      <div class="pull-right">
+        <button type="button" class="copy-btn" data-placement="bottom" data-clipboard-target="#foreflight_text"  style="padding: unset; margin: unset; width: 40px; height: 40px;">
+          <img src="clippy.svg" alt="Copy to clipboard" width="20">
+        </button>
+      </div>
+      <span id="foreflight_text" style="margin-right:10px;"></span>
     </td>
   </tr>
   <tr>
@@ -320,6 +333,6 @@
     <td id="gps_text"></td>
   </tr>
   </table>
-  <footer><font size="2"><p style="text-align:right">Version 18-10-24-18-00</p></font></footer>
+  <footer><font size="2"><p style="text-align:right">Version 18_10_24_19_30</p></font></footer>
 </body>
 </html>
