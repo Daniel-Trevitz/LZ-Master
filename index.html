@@ -1,22 +1,20 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
 
   <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-
-  <script src="clipboard.min.js"></script>
-  
-  <style>
-  .copy-btn {
-    padding: 2px 6px;
-  }
-  </style>
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
   <script>
-
     var hosp_list = new Array();
     var lzid_list = new Array();
     var ssdata;
@@ -30,12 +28,14 @@
       else if( str == "no" )
         st = false;
 
-      if( st )
-        $( name  ).val( "yes" );
-      else
-        $( name  ).val( "no" );
+      var e = $( name );
 
-      $( name  ).slider( "refresh" );
+      if( st )
+        e.val( "yes" );
+      else
+        e.val( "no" );
+
+      e.slider( "refresh" );
     }
 
     function showindex(index)
@@ -123,7 +123,7 @@
       ssdata = data.values;
 
       // Process the JSON data - 
-      var len=data.values.length-1
+      var len = data.values.length-1
       for(var i = 1; i < len+1; i++)
       {
         hosp_list[i] = ([ data.values[i][1], i ]);
@@ -163,17 +163,58 @@
       }
     }
 
+    function clearCopyTooltips()
+    {
+      var btns = document.querySelectorAll('.copy-btn');
+
+      for(var i=0; i < btns.length; i++)
+      {
+        $( btns[i] ).tooltip('hide')
+                    .attr('data-original-title', '');
+      }
+    }
+
+    function showTooltip(e,msg)
+    {
+      $(e).tooltip('hide')
+          .attr('data-original-title', msg)
+          .tooltip('show');
+
+      setTimeout(clearCopyTooltips, 2000);
+    }
 
     window.onload = function()
     {
-      var url = "https://sheets.googleapis.com/v4/spreadsheets/14YF7CV3elNUwdlgC8bDa_aNATAV7cMBQ7AviaaDuR2c/values/Data?key=AIzaSyBL-Kj45bgzsfSFy0R-Kr0He-GlntUPluw";
+      var apiKey = "AIzaSyBL-Kj45bgzsfSFy0R-Kr0He-GlntUPluw";
+      var gssKey = "14YF7CV3elNUwdlgC8bDa_aNATAV7cMBQ7AviaaDuR2c"
+
+      var url = "https://sheets.googleapis.com/v4/spreadsheets/" + gssKey + "/values/Data?key=" + apiKey;
       $.getJSON(url, process);
 
       $("#gnd_pad" ).on("slidestop", showLast);
       $("#roof_pad").on("slidestop", showLast);
       $("#off_pad" ).on("slidestop", showLast);
 
+      // Setup the clipboard buttons using class .copy-btn
       var clipboard = new ClipboardJS('.copy-btn');
+
+      clipboard.on('success', function(e) {
+        showTooltip(e.trigger,"Copied!");
+        e.clearSelection();
+      });
+
+      clipboard.on('error', function(e) {
+        showTooltip(e.trigger,"failed :(");
+      });
+
+      // all class copy-btn will remove tool tip after loosing the cursor
+      var btns = document.querySelectorAll('.copy-btn');
+
+      for(var i=0; i < btns.length; i++)
+      {
+         btns[i].addEventListener('mouseleave', clearCopyTooltips);
+         btns[i].addEventListener('blur',       clearCopyTooltips);
+      }
     }
   </script>
 
@@ -182,15 +223,13 @@
 
   <div data-role="collapsible-set">
     <div data-role="collapsible" data-mini="true" data-theme="b" data-content-theme="b" id="hosp-list-div">
-        <h2>Choose a hospital</h2>
-        <ul data-role="listview" data-filter="true" id="hosp-list">
-        </ul>
+      <h2>Choose a hospital</h2>
+      <ul data-role="listview" data-filter="true" id="hosp-list"></ul>
     </div>
 
     <div data-role="collapsible" data-mini="true" data-theme="b" data-content-theme="b" id="lzid-list-div">
-        <h2>Choose an ID</h2>
-        <ul data-role="listview" data-filter="true" id="lzid-list">
-        </ul>
+      <h2>Choose an ID</h2>
+      <ul data-role="listview" data-filter="true" id="lzid-list"></ul>
     </div>
   </div>
 
@@ -255,8 +294,8 @@
     <td align="right">Fore Flight:</td>
     <td id="foreflight_text"></td>
     <td>
-      <button class="copy-btn" data-clipboard-target="#foreflight_text">
-        <img src="clippy.svg" alt="Copy to clipboard" width=15 >
+      <button type="button" class="copy-btn btn ui-btn" data-placement="bottom" data-clipboard-target="#foreflight_text">
+        <img src="clippy.svg" alt="Copy to clipboard" width="15">
       </button>
     </td>
   </tr>
@@ -281,6 +320,6 @@
     <td id="gps_text"></td>
   </tr>
   </table>
-  <footer><font size="2"><p style="text-align:right">Version 18-10-24-09-00</p></font></footer>
+  <footer><font size="2"><p style="text-align:right">Version 18-10-24-18-00</p></font></footer>
 </body>
 </html>
