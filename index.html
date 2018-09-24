@@ -16,12 +16,12 @@
 
     function copyForeFlight()
     {
-      var elem = document.getElementById("foreflight_text");
-
+        var lat  = ssdata[lastindex][11]; //Latitude
+        var long = ssdata[lastindex][12]; //Longitude
         // Create new element
         var el = document.createElement('textarea');
         // Set value (string to be copied)
-        el.value = elem.innerHTML;
+        el.value = lat + "/" + long;
         // Set non-editable to avoid focus and move outside of view
         el.setAttribute('readonly', '');
         el.style = {position: 'absolute', left: '-9999px'};
